@@ -6,7 +6,7 @@ Created on Sun Jul 23 20:27:37 2023
 """
 import numpy as np
 import matplotlib.pyplot as plt
-import constants as const
+from .constants import k
 
 #---------------------------------------- Effusive Beams --------------------------------------------------------
 def v_w(T1,m):
@@ -20,7 +20,7 @@ def v_w(T1,m):
     -------
     Most probable velocity (m/s).
     '''
-    vw = np.sqrt((2*const.k*T1)/m)
+    vw = np.sqrt((2*k*T1)/m)
     return vw
 
 def f_eff(m,v,T):
@@ -36,8 +36,8 @@ def f_eff(m,v,T):
     Speed probability distribution (array).
     '''
     a = 4/np.sqrt(np.pi)
-    b = (m/2*const.k*T)**(3/2)
-    c = (m*v**2)/(2*const.k*T)
+    b = (m/2*k*T)**(3/2)
+    c = (m*v**2)/(2*k*T)
     f = a*b * v**2 * np.exp(-c)
     return f
 
@@ -70,7 +70,7 @@ def vmax_est(T1,m,gamma):
     -------
     Maximum possible longitudinal speed (m/s).
     '''
-    vw = np.sqrt(2*const.k*T1/m)
+    vw = np.sqrt(2*k*T1/m)
     vmax = vw*np.sqrt(gamma/(gamma-1))
     return vmax
 
@@ -108,9 +108,9 @@ def f(m,v,v2,T,C=1):
     -------
     Velocity probability distribution (array).
     '''
-    vw = np.sqrt(2*const.k*T/m) # define vw again for ease
+    vw = np.sqrt(2*k*T/m) # define vw again for ease
     a = (v/vw)**3
-    b = (m*(v-v2)**2)/(2*const.k*T)
+    b = (m*(v-v2)**2)/(2*k*T)
     f = C * a * np.exp(-b)
     return f
 
@@ -144,7 +144,7 @@ def v_2_mach(T1,m,gamma,MF):
     -------
     Mean lognitudinal vlocity of the beam (m/s)
     '''
-    a = (const.k*T1)/m
+    a = (k*T1)/m
     b = (gamma-1)/2
     v2 = MF * np.sqrt((gamma*a)/(1+b*MF**2))
     return v2
@@ -236,11 +236,11 @@ def f_mSS(m,v,P1,P2,T1,gamma):
     f = probability distribution of velocities.
     '''
     T2 = np.power((P2/P1),((gamma-1)/gamma))*T1 # temp after nozzle
-    vw = np.sqrt(2*const.k*T1/m) # KE = 2kT
+    vw = np.sqrt(2*k*T1/m) # KE = 2kT
     v2 = vw*np.sqrt((gamma/(gamma-1))*(1-(P2/P1)**((gamma-1)/gamma))) # Av. velocity after nozzle
     
     a = (v/vw)**3
-    b = (m*(v-v2)**2)/(2*const.k*T2)
+    b = (m*(v-v2)**2)/(2*k*T2)
     f = a * np.exp(-b)
     return f
 

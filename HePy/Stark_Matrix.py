@@ -12,7 +12,7 @@ from Calculate_He_Transitions import W_tot, defect
 import numpy as np
 from tqdm import tqdm
 from numpy import linalg as LA
-import constants as const
+from .constants import e,a0,h
 
 def Basis(ns):
     """Generate a basis of atomic states.
@@ -119,7 +119,7 @@ def H_0(basis,dJ=1):
     np.fill_diagonal(H0,En)
     return H0
 
-def H_s(basis,Fz=1,m=0,r_exp=1,h=0.005,rcore=0.65):
+def H_s(basis,Fz=1,m=0,r_exp=1,step=0.005,rcore=0.65):
     """Calculate the off-diagonal matrix elements that make up the field hamiltonian Hs
     
     Inputs
@@ -128,7 +128,7 @@ def H_s(basis,Fz=1,m=0,r_exp=1,h=0.005,rcore=0.65):
     Fz    = Electric field magnitude (V/m) [Default = 1V/m]
     m     = Projection of the orbital angular momentum quantum number. (Default = 0)
     r_exp = Exponent of r in matrix element for radial integral. (Default = 1).
-    h     = Radial integration step size. (Default = 0.005).
+    step  = Radial integration step size. (Default = 0.005).
     rcore = Minimum r value in numerov. (The default is 0.65 -> dipoole polarizability of He core).
     
     Returns
@@ -156,11 +156,11 @@ def H_s(basis,Fz=1,m=0,r_exp=1,h=0.005,rcore=0.65):
                     ## Calculate angular integral
                     angint = ang_int(li,lj,m)
                     ## Calculate radial integral
-                    radint = radial_integral(ni,li,nj,lj,r_exp,h,rcore)
+                    radint = radial_integral(ni,li,nj,lj,r_exp,step,rcore)
                     ## Populate [i,j] element of matrix
                     Hs[i,j] = angint*radint
                     
-    return (Hs * Fz * const.e * const.a0 / const.h)
+    return (Hs * Fz * e * a0 / h)
 
 def E_Stark(H0,Hs,Fz_arr):
     """Calculate the Stark energies.

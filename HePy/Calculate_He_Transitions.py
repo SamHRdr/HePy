@@ -6,7 +6,7 @@ Created on Fri Jan 12th 2024
 
 Functions required to calculate He energy levels etc.
 """
-import constants as const
+from .constants import R_He,c,alpha,h,e,a0
 
 ## Binding energy and Quantum defects.
 def W(n,defect): 
@@ -18,7 +18,7 @@ def W(n,defect):
     n      = principal quantum number.
     defect = quantum defect calcualted using Ritz expansion.
     """
-    return -(const.R_He*const.c)/((n-defect)**2)
+    return -(R_He*c)/((n-defect)**2)
 
 def W_tot(n,defect,wn=False):
     """Include relativistic and finite mass corrections to standard Rydberg formuala above.
@@ -32,14 +32,14 @@ def W_tot(n,defect,wn=False):
     """
     N = n-defect
     Term1     = 1/N**2
-    Term2     = (3*const.alpha**2)/(4*n**4)
-    Term3_num = 1+((5/6)*(const.alpha*2)**2)
+    Term2     = (3*alpha**2)/(4*n**4)
+    Term3_num = 1+((5/6)*(alpha*2)**2)
     Term3     = (1.370745620e-4)**2 * (Term3_num/n**2)
     
     if wn == False:
-        W_tot = const.R_He * const.c * (Term1-Term2+Term3)
+        W_tot = R_He * c * (Term1-Term2+Term3)
     else:
-        W_tot = 0.01 * (const.R_He  * (Term1-Term2+Term3))
+        W_tot = 0.01 * (R_He  * (Term1-Term2+Term3))
     return -W_tot
 
 def defect(n,L,J):
@@ -97,6 +97,6 @@ def Fion_He_adibatic(n):
     """Calculates the electric field required to classically ionise 
     Rydberg atom of state n (From Gallagher), constants from NIST."""
     
-    F0    = (2*const.R_He*const.h*const.c)/(const.e*const.a0) # adaptation from atomic units
+    F0    = (2*R_He*h*c)/(e*a0) # adaptation from atomic units
     F_ion = (F0)/(16*n**4) #V/m
     return F_ion
