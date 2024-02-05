@@ -8,7 +8,7 @@ Field free and Stark hamiltonians for Rydberg He.
 """
 
 from .numerov import radial_integral
-from Calculate_He_Transitions import W_tot, defect
+from .Calculate_He_Transitions import W_tot, defect
 import numpy as np
 from tqdm import tqdm
 from numpy import linalg as LA
