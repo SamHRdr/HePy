@@ -1,9 +1,12 @@
 # HePy
 Personal library for calculating transition energies in Rydberg helium. 
 
-## STILL IN DEVELOPMENT! - Install doesn't yet add to anaconda site packages (Jupyter will not reckognise it as a package)
+Install using pip (reccommended):
+```
+pip install git+https://github.com/SamHRdr/HePy
+```
 
-Install development version using:
+Alternatively install the development version using:
 ```
 git clone https://github.com/SamHRdr/HePy
 cd HePy
