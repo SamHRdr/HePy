@@ -7,7 +7,7 @@ Created on Mon Jan 29 17:00:44 2024
 Field free and Stark hamiltonians for Rydberg He.
 """
 
-from numerov import radial_integral
+from .numerov import radial_integral
 from Calculate_He_Transitions import W_tot, defect
 import numpy as np
 from tqdm import tqdm
