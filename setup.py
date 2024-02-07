@@ -6,5 +6,6 @@ setup(
     author="Sam Reeder",
     author_email="s.reeder@ucl.ac.uk",
     licence="MIT",
-    install_requires=['numpy',]
+    packages=["HePy"],
+    install_requires=["numpy",]
 )
