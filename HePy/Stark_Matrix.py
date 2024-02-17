@@ -13,49 +13,31 @@ import numpy as np
 from tqdm import tqdm
 from numpy import linalg as LA
 from .constants import e,a0,h
+from sympy.physics.wigner import wigner_3j
 
-def Basis(ns):
+def Basis(ns,ml_arr):
     """Generate a basis of atomic states.
     Inputs
     -------
-    ns = array of principal quantum numbers.
+    ns     = array of principal quantum numbers.
+    ml_arr = desired values of ml (projection of the orbital angular quantum number).
+             e.g. ml_arr = [-1,0,1]
 
     Returns
     -------
     basis = 2D list of states 
-            format [[n,l],...]
+            format [[n,l,ml],...]
     """
     basis = [] # Initialise list
     for n in ns:
         for l in range(n): # all allowed ls
-            state = [n,l]
-            basis.append(state)
+            mls = np.arange(-l,l+1,1) # all allowed mls
+            
+            for ml in mls: # check if ml is desired
+                if ml in ml_arr:
+                    state = [n,l,ml] # build basis
+                    basis.append(state)
     return basis
-
-
-def ang_int(li,lj,m=0):
-    """Calculate the angular integral component of the Stark hamiltonian.
-    Assumes dm = 0 and dl = +/- 1.
-    
-    Inputs
-    -------
-    li = Orbital angular momentum quantum number of first state.
-    lj = Orbital angular momentum quantum number of first state.
-    m  = Projection of the orbital angular momentum quantum number. (Default = 0)
-    
-    Returns
-    -------
-    angint = Evaluation of the angular integral.
-    """
-    if abs(li-lj)!=1:
-        raise ValueError("lj must be li+1 or li-1")
-    
-    if   lj == li+1:
-        angint = np.sqrt(((li+2)**2 - m**2) / ((2*li+3)*(2*li+1)))
-    elif lj == li-1:
-        angint = np.sqrt((li**2 - m**2) / ((2*li+1)*(2*li-1)))
-        
-    return angint
 
 def order(eigenvalues,eigenvectors):
     """Sort eigenvalues and eigenvectors in ascending order of eigenvalue."""
@@ -85,6 +67,37 @@ def lookup_eigval(basis,n,l):
     inds_nl = np.intersect1d(inds_n,inds_l)[0]
     
     return inds_nl
+
+def dip_mtrx_elem(basis1,basis2,q=0,r_exp=1,h=0.005,rcore=0.65):
+    """Calculate dipole matrix element <n'l'm'|r|nlm> per unit field.
+    
+    Inputs
+    -------
+    basis = 2D Array. Basis set of atomic states [n,l,ml].
+    q     = Electric field polarisation vector, q = 0 [linear polarised], q= +/- 1 [Circularly polarised]
+    r_exp = Exponent of r in matrix element for radial integral. (Default = 1).
+    step  = Radial integration step size. (Default = 0.005).
+    rcore = Minimum r value in numerov. (The default is 0.65 -> dipoole polarizability of He core).
+    
+    Returns
+    -------
+    dipole_matrix_element - In atomic units.
+    """
+    # state 1
+    n1, l1, ml1 = basis1[0], basis1[1], basis1[2]
+
+    # state 2
+    n2, l2, ml2 = basis2[0], basis2[1], basis2[2]
+
+    # Use numerov method to calculate radial integral
+    radint = radial_integral(n1,l1,n2,l2,r_exp,h,rcore)
+
+    # Calculate angular initegral
+    angint = (-1)**ml2 * np.sqrt((2*l2+1)*(2*l1+1)) * float(wigner_3j(l2,1,l1,-ml2,q,ml1)) * float(wigner_3j(l2,1,l1,0,0,0))
+
+    dipole_matrix_element = angint*radint
+
+    return dipole_matrix_element
 
 def H_0(basis,dJ=1):
     """Function to calculate the field free hamiltonian for a Rydberg atom.
@@ -119,21 +132,22 @@ def H_0(basis,dJ=1):
     np.fill_diagonal(H0,En)
     return H0
 
-def H_s(basis,Fz=1,m=0,r_exp=1,step=0.005,rcore=0.65):
+def H_s(basis,Fz=1,q=0,r_exp=1,step=0.005,rcore=0.65):
     """Calculate the off-diagonal matrix elements that make up the field hamiltonian Hs
     
     Inputs
     -------
     basis = 2D Array. Basis set of atomic states [n,l].
     Fz    = Electric field magnitude (V/m) [Default = 1V/m]
-    m     = Projection of the orbital angular momentum quantum number. (Default = 0)
+    q     = Electric field polarisation vector, q = 0 [linear polarised], q= +/- 1 [Circularly polarised]
+            (Default = 0, linearly polarised)
     r_exp = Exponent of r in matrix element for radial integral. (Default = 1).
     step  = Radial integration step size. (Default = 0.005).
-    rcore = Minimum r value in numerov. (The default is 0.65 -> dipoole polarizability of He core).
+    rcore = Minimum r value in numerov. (The default is 0.65 -> dipoole polarisability of He core).
     
     Returns
     -------
-    Hs = Stark matrix.
+    Hs = Stark matrix in units of Hz.
     """
     
     # Initialise matrix
@@ -142,23 +156,26 @@ def H_s(basis,Fz=1,m=0,r_exp=1,step=0.005,rcore=0.65):
     
     # Run over all possible states
     for i in tqdm(range(size)):
-        ni = basis[i][0]
-        li = basis[i][1]
+        ni  = basis[i][0]
+        li  = basis[i][1]
+        mli = basis[i][2]
         
         for j in range(size):
-            nj = basis[j][0]        
-            lj = basis[j][1]
+            nj  = basis[j][0]        
+            lj  = basis[j][1]
+            mlj = basis[j][2]
             
             ## Conditions for calculation
             if i!=j: # off diagonal
-                if abs(li-lj)==1: # dl must be 1
-                    
-                    ## Calculate angular integral
-                    angint = ang_int(li,lj,m)
-                    ## Calculate radial integral
-                    radint = radial_integral(ni,li,nj,lj,r_exp,step,rcore)
-                    ## Populate [i,j] element of matrix
-                    Hs[i,j] = angint*radint
+                if mli==mlj: # Projection not changing
+                    if abs(li-lj)==1: # dl must be 1
+
+                        ## Define states
+                        state1 = [ni,li,mli]
+                        state2 = [nj,lj,mlj]
+
+                        ## Populate [i,j] element of matrix
+                        Hs[i,j] = dip_mtrx_elem(state1,state2,q,r_exp,step,rcore)
                     
     return (Hs * Fz * e * a0 / h)
 
