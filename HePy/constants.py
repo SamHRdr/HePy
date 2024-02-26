@@ -17,6 +17,7 @@ amu   = 1.66053906660e-27 # atomic mass (kg)
 m_He  = 4.00260*amu # Helium atom mass (kg)
 m_e   = 9.1093837015e-31 # Mass of the electron (kg)
 k     = 1.380649e-23 # Boltzmann constant (J/k)
+eps0  = 8.8541878128e-12 # Vacuum electric permittivity (F/m)
 
 # Derived constants
 mu_He = (m_He-m_e)*m_e/m_He # reduced mass He

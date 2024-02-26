@@ -6,7 +6,8 @@ Created on Fri Jan 12th 2024
 
 Functions required to calculate He energy levels etc.
 """
-from .constants import R_He,c,alpha,h,e,a0
+from .constants import R_He,c,alpha,h,e,a0,eps0
+from numpy import pi
 
 ## Binding energy and Quantum defects.
 def W(n,defect): 
@@ -100,3 +101,19 @@ def Fion_He_adibatic(n):
     F0    = (2*R_He*h*c)/(e*a0) # adaptation from atomic units
     F_ion = (F0)/(16*n**4) #V/m
     return F_ion
+
+def Inglis_Teller(n):
+    """Calculate the inglis teller limit for a given n.
+    
+    Inputs
+    -------
+    n = principal quantum number
+    
+    Returns
+    -------
+    F_IT = Inglis teller limit (V/m).
+    """
+    F_IT = e / (12.* pi * eps0 * a0**2. * n**5.)
+    
+    return F_IT
+    
