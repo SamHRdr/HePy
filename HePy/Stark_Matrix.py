@@ -122,7 +122,7 @@ def dip_mtrx_elem(basis1,basis2,QD1,QD2,q=0,r_exp=1,h=0.005,rcore=0.65):
     N2 = n2-QD2
 
     # Use numerov method to calculate radial integral
-    radint = radial_integral(N1, l1, N2, l2, r_exp=1, h=0.005, rcore=0.65)
+    radint = radial_integral(N1, l1, N2, l2, r_exp, h, rcore)
     
     # Calculate angular initegral
     angint = (-1.)**ml2 * np.sqrt((2*l2+1)*(2*l1+1)) * float(wigner_3j(l2,1,l1,-ml2,q,ml1)) * float(wigner_3j(l2,1,l1,0,0,0))
