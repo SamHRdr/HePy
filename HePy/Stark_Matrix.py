@@ -39,14 +39,15 @@ def Basis(ns,ml_arr):
                     basis.append(state)
     return basis
 
-def QD_Array(basis,dJ=1):
+def QD_Array(basis,S=1,dJ=1):
     """Function to calculate the quantum defects of a Rydberg atom in a particular state.
     
     Inputs
     -------
     basis = 2D Array. Basis set of atomic states [n,l,ml].
+    S     = Spin quantum number (Defult is S=1 for triplet states)
     dJ    = Difference from l i.e. J = l+dJ - used in quantum defect calculation.
-            (Default is 1. Can take values dJ = -1,0,+1 for the triplet state [S=1])
+            (Default is 1. Can take values dJ = -1,0,+1 for the triplet state [S=1], must be 0 for S=0)
     
     Returns
     --------
@@ -60,10 +61,14 @@ def QD_Array(basis,dJ=1):
         # Extract quantum numbers
         ni = basis[state][0]
         li = basis[state][1]
-        Ji = li+dJ
+        
+        if S==1:
+            Ji = li+dJ
+        else:
+            Ji = li
 
         # Calculate field free energies
-        D = defect(ni,li,Ji)
+        D = defect(ni,li,Ji,S)
         QD_arr[state] = D
         
     return QD_arr
