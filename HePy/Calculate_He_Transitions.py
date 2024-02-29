@@ -97,16 +97,17 @@ def defect(n,L,J,S=1):
     
     return defect
 
-def trans(n1,l1,J1,n2,l2,J2):
+def trans(n1,l1,J1,n2,l2,J2,S=1):
     """Calcuate difference between two energies.
     Inputs
     -------
     n1(2) = principal quantum number of first(second) state.
     l1(2) = orbital angualr momentum quantum number of first(second) state.
     J1(2) = Total angular momentum quantum number of first(second) state.
+    S     = Total spin quantum number (Default S=1 [triplets]).
     """
-    En1 = W_tot(n1, defect(n1,l1,J1))
-    En2 = W_tot(n2, defect(n2,l2,J2))
+    En1 = W_tot(n1, defect(n1,l1,J1,S))
+    En2 = W_tot(n2, defect(n2,l2,J2,S))
     
     return abs(En2-En1)
 
