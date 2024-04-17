@@ -2,7 +2,7 @@
 """
 Created on Fri Jan 12th 2024
 
-@author: sam_r
+@author: S.H.Reeder
 
 Functions required to calculate He energy levels etc.
 """
@@ -10,6 +10,7 @@ from .constants import R_He,c,alpha,h,e,a0,eps0
 from numpy import pi
 
 ## Binding energy and Quantum defects.
+# Less correct function
 def W(n,defect): 
     """Binding energy of the eigenstates of the Hamiltonian H0 associated 
     with a single Rydberg electron in the He atom in units of Hz.
@@ -21,6 +22,7 @@ def W(n,defect):
     """
     return -(R_He*c)/((n-defect)**2)
 
+# More correct function
 def W_tot(n,defect,wn=False):
     """Include relativistic and finite mass corrections to standard Rydberg formuala above.
     From Drake 1999 - For He atom only (units of Hz).
@@ -105,6 +107,9 @@ def trans(n1,l1,J1,n2,l2,J2,S=1):
     l1(2) = orbital angualr momentum quantum number of first(second) state.
     J1(2) = Total angular momentum quantum number of first(second) state.
     S     = Total spin quantum number (Default S=1 [triplets]).
+    
+    N.B. This is only really effective for high n. For transitions to or from
+         n<10 I reccommend using the values from https://physics.nist.gov/PhysRefData/ASD/levels_form.html
     """
     En1 = W_tot(n1, defect(n1,l1,J1,S))
     En2 = W_tot(n2, defect(n2,l2,J2,S))

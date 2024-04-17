@@ -2,7 +2,7 @@
 """
 Created on Mon Jan 29 17:00:44 2024
 
-@author: sam_r
+@author: S.H.Reeder
 
 Field free and Stark hamiltonians for Rydberg He.
 """
@@ -102,7 +102,7 @@ def lookup_eigval(basis,n,l):
     
     return inds_nl
 
-def dip_mtrx_elem(basis1,basis2,QD1,QD2,q=0,r_exp=1,h=0.005,rcore=0.65):
+def dip_mtrx_elem(basis1,basis2,QD1,QD2,q=0,r_exp=1,step=0.0065,rcore=0.65):
     """Calculate dipole matrix element <n'l'm'|r|nlm> per unit field.
     
     Inputs
@@ -111,8 +111,9 @@ def dip_mtrx_elem(basis1,basis2,QD1,QD2,q=0,r_exp=1,h=0.005,rcore=0.65):
     QD    = Qauntum defect of basis state.
     q     = Electric field polarisation vector, q = 0 [linear polarised], q= +/- 1 [Circularly polarised]
     r_exp = Exponent of r in matrix element for radial integral. (Default = 1).
-    step  = Radial integration step size. (Default = 0.005).
-    rcore = Minimum r value in numerov. (The default is 0.65 -> dipoole polarizability of He core).
+    step  = Radial integration step size. (Default = 0.0065).
+    rcore = Minimum r value in numerov. (The default is 0.65 -> dipole (polarizability)^(1/3) of He core).
+            [For hydrogen rcore=0.05]
     
     Returns
     -------
@@ -127,7 +128,7 @@ def dip_mtrx_elem(basis1,basis2,QD1,QD2,q=0,r_exp=1,h=0.005,rcore=0.65):
     N2 = n2-QD2
 
     # Use numerov method to calculate radial integral
-    radint = radial_integral(N1, l1, N2, l2, r_exp, h, rcore)
+    radint = radial_integral(N1, l1, N2, l2, r_exp, step, rcore)
     
     # Calculate angular initegral
     angint = (-1.)**ml2 * np.sqrt((2*l2+1)*(2*l1+1)) * float(wigner_3j(l2,1,l1,-ml2,q,ml1)) * float(wigner_3j(l2,1,l1,0,0,0))
@@ -166,7 +167,7 @@ def H_0(basis,QD_arr):
     np.fill_diagonal(H0,En)
     return H0
 
-def H_s(basis,QD_arr,Fz=1.0,q=0,r_exp=1,step=0.005,rcore=0.65):
+def H_s(basis,QD_arr,Fz=1.0,q=0,r_exp=1,step=0.0065,rcore=0.65):
     """Calculate the off-diagonal matrix elements that make up the field hamiltonian Hs
     
     Inputs
@@ -177,7 +178,7 @@ def H_s(basis,QD_arr,Fz=1.0,q=0,r_exp=1,step=0.005,rcore=0.65):
     q      = Electric field polarisation vector, q = 0 [linear polarised], q= +/- 1 [Circularly polarised]
             (Default = 0, linearly polarised)
     r_exp  = Exponent of r in matrix element for radial integral. (Default = 1).
-    step   = Radial integration step size. (Default = 0.005).
+    step   = Radial integration step size. (Default = 0.0065 a.u.).
     rcore  = Minimum r value in numerov. (The default is 0.65 -> dipoole polarisability of He core).
     
     Returns
