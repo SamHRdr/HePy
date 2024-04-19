@@ -54,12 +54,14 @@ def defect(n,L,J,S=1):
     n = principal quantum number.
     L = orbital angualr momentum quantum number.
     J = Total angular momentum quantum number.
-        Can take values L-1, L, L+1 for S=1 [or just L if S=0].
+        Can take values |L-S| ≤ J ≤ L+S
     S = Spin quantum number. [Default = 1 (triplets)]
     """
     
     if (S!= 1 and S!=0):
         raise ValueError("S must be equal to 1 or 0.")
+    if (J>=(L+S) or J<=(L-S)):
+        raise ValueError("J can take values |L-S| ≤ J ≤ L+S.")
         
     ## Constants all taken from Drake Table VII.
     
