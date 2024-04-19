@@ -48,13 +48,13 @@ def W_tot(n,defect,wn=False):
 def defect(n,L,J,S=1):
     """Recursive Ritz expasion giving the value of quantum defects, 
     where c0,c2,c4,c6 are calculated contants from Drake 1999.
-    N.B. If S=0 then J must = 0
     
     Inputs
     -------
     n = principal quantum number.
     L = orbital angualr momentum quantum number.
     J = Total angular momentum quantum number.
+        Can take values L-1, L, L+1 for S=1 [or just L if S=0].
     S = Spin quantum number. [Default = 1 (triplets)]
     """
     
