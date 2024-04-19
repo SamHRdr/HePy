@@ -3,6 +3,8 @@
 Created on Mon Feb 19 11:52:15 2024
 
 @author: S.H.Reeder
+
+! THESE FUNCTIONS ARE YET TO BE VALIDATED - USE WITH CAUTION !
 """
 from .Stark_Matrix import dip_mtrx_elem, lookup_eigval
 from .Calculate_He_Transitions import W_tot, defect
