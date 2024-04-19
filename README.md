@@ -16,3 +16,5 @@ And then run:
 ```
 python setup.py install
 ```
+
+Functions up to version 2.0.0 were written with Anaconda version 4.14.0.
