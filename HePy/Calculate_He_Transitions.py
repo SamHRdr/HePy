@@ -145,7 +145,7 @@ def Inglis_Teller(n):
 
 ## Rabi frequency
 def rabi_freq(basis1,basis2,QD1,QD2,I0,q=0,r_exp=1,step=0.0065,rcore=0.65):
-    """Calculate dipole matrix element <n'l'm'|r|nlm> per unit field.
+    """Calculate Rabi frequency of transition in Hz. N.B. Only between n1,l1 -> n2,l2 (J not included).
     
     Inputs
     -------
