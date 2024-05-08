@@ -5,10 +5,11 @@ Created on Mon Feb 19 11:52:15 2024
 @author: S.H.Reeder
 
 ! THESE FUNCTIONS ARE YET TO BE VALIDATED - USE WITH CAUTION !
+
 """
 from .Stark_Matrix import dip_mtrx_elem, lookup_eigval
 from .Calculate_He_Transitions import W_tot, defect
-from .constants import e, a0, eps0, c, h
+from .constants import e, a0, eps0, c, h, hbar
 import numpy as np
 from tqdm import tqdm
 
@@ -141,3 +142,33 @@ def fl_life(basis,state1,S=0,dJ=1,q=0,r_exp=1,step=0.005,rcore=0.05):
             A_s += A # Sum coefficients
             
     return A_s**(-1)
+
+##--------------------------- Rabi frequency ----------------------------------
+def rabi_freq(basis1,basis2,QD1,QD2,I0,q=0,r_exp=1,step=0.0065,rcore=0.65):
+    """Calculate Rabi frequency of transition in Hz. N.B. Only between n1,l1 -> n2,l2 (J not included).
+    
+    Inputs
+    -------
+    basis = 2D Array. Basis set of atomic states [n,l,ml].
+    QD    = Qauntum defect of basis state.
+    I0    = Electric field intensisty of radiation. (W/m^2)
+    q     = Electric field polarisation vector, q = 0 [linear polarised], q= +/- 1 [Circularly polarised]
+    r_exp = Exponent of r in matrix element for radial integral. (Default = 1).
+    step  = Radial integration step size. (Default = 0.0065).
+    rcore = Minimum r value in numerov. (The default is 0.65 -> dipole (polarizability)^(1/3) of He core).
+            [For hydrogen rcore=0.05]
+    
+    Returns
+    -------
+    Rabi_frq = Rabi frequency in Hz
+    """
+    # Photon field amplitude - (V/m)
+    F0 = np.sqrt((2*I0)/(c*eps0))
+    
+    # Dipole transition moment - S.I.
+    dip_trans = dip_mtrx_elem(basis1,basis2,QD1,QD2,q,r_exp,step,rcore) * e * a0
+    
+    # Rabi frequency
+    Rabi_frq = (abs(dip_trans) * F0)/hbar
+    
+    return Rabi_frq
