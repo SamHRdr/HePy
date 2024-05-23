@@ -60,7 +60,7 @@ def defect(n,L,J,S=1):
     
     if (S!= 1 and S!=0):
         raise ValueError("S must be equal to 1 or 0.")
-    if (J>(L+S) or J<(L-S)):
+    if (J>(L+S) or J<abs(L-S)):
         raise ValueError("J can take values |L-S| ≤ J ≤ L+S.")
         
     ## Constants all taken from Drake Table VII.
