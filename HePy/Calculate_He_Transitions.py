@@ -95,7 +95,7 @@ def defect(n,L,J,S=1):
     ## Recursive Ritz function
     if L <= 6:
         m = n - c0[L]
-        defect = c0[L] + c2[L]*m**(-2) + c4[L]*m**(-4) + c6[L]*m**(-6);
+        defect = c0[L] + c2[L]*m**(-2.) + c4[L]*m**(-4.) + c6[L]*m**(-6.);
     else:
         defect = 0
     
