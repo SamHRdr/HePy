@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="HePy",
-    version="0.2.6",
+    version="0.2.7",
     author="Sam Reeder",
     author_email="s.reeder@ucl.ac.uk",
     licence="MIT",
