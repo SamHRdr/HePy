@@ -6,8 +6,8 @@ Created on Fri Jan 12th 2024
 
 Functions required to calculate He energy levels etc.
 """
-from .constants import R_He,c,alpha,h,e,a0,eps0,hbar
-from numpy import pi, sqrt
+from .constants import R_He,c,alpha,h,e,a0,eps0
+from numpy import pi
 
 ## Binding energy and Quantum defects.
 # Less correct function
@@ -58,9 +58,9 @@ def defect(n,L,J,S=1):
     S = Spin quantum number. [Default = 1 (triplets)]
     """
     
-    if (S!= 1 and S!=0):
+    if (S!= 1) & (S!=0):
         raise ValueError("S must be equal to 1 or 0.")
-    if (J>(L+S) or J<abs(L-S)):
+    if (J>(L+S)) | (J<abs(L-S)):
         raise ValueError("J can take values |L-S| ≤ J ≤ L+S.")
         
     ## Constants all taken from Drake Table VII.

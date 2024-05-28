@@ -62,10 +62,14 @@ def QD_Array(basis,S=1,dJ=1):
         ni = basis[state][0]
         li = basis[state][1]
         
-        if S==1:
+        if (S==1) & (li==0): # Ensure J for triplet s = 1
+            Ji = 1
+        elif (S==1) & (li>0): # Can choose J for all other l
             Ji = li+dJ
-        else:
+        elif (S==0): # Singlet states, J=l
             Ji = li
+        else:
+            raise ValueError("https://giphy.com/gifs/wetv-no-facepalm-cant-3xz2BLBOt13X9AgjEA/fullscreen" )
 
         # Calculate field free energies
         D = defect(ni,li,Ji,S)
