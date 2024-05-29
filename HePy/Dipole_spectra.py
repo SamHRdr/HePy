@@ -24,7 +24,7 @@ def dip_spec_int(basis, QD_arr, state1, state2, q=0, r_exp=1, step=0.0065, rcore
     q      = Electric field polarisation vector, q = 0 [linear polarised], q= +/- 1 [Circularly polarised]
     r_exp  = Exponent of r in matrix element for radial integral. (Default = 1).
     step   = Radial integration step size. (Default = 0.005).
-    rcore  = Minimum r value in numerov. (The default is 0.65 -> dipole (polarizability)^(1/3) of He core).
+    rcore  = Minimum r value in numerov. (The default is core radius: 0.65 -> dipole (polarizability)^(1/3) of He core).
 
     Returns
     -------
@@ -37,16 +37,23 @@ def dip_spec_int(basis, QD_arr, state1, state2, q=0, r_exp=1, step=0.0065, rcore
     # Sum over all states
     for i in range(size):
         basisi = basis[i]  # unpack state i
+        li     = basisi[1]
         QDi    = QD_arr[i]
         c_ik   = state1[i] # get eigenvector coefficient for ith state
         
         for j in range(size):
             basisj = basis[j]  # unpack state j
+            lj     = basisj[1]
             QDj    = QD_arr[j]
-            c_jq   = state2[j] # get eigenvector coefficient for ith state
+            c_jq   = state2[j] # get eigenvector coefficient for jth state
             
-            # Add component to spectral intensity
-            S_kq += (c_ik**2) * (c_jq**2) * (dip_mtrx_elem(basisi,basisj,QDi,QDj,q,r_exp,step,rcore)**2)
+            # ensure dl must be 1
+            if abs(li-lj)==1: 
+                
+                # Add component to spectral intensity
+                S_kq += (c_ik) * (c_jq) * (dip_mtrx_elem(basisi,basisj,QDi,QDj,q,r_exp,step,rcore))
+            
+    return S_kq * e * a0
             
     return S_kq * e * a0 # converted to SI units
 

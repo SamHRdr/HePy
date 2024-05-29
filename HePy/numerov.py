@@ -35,7 +35,7 @@ def radial_integral(n1, l1, n2, l2, r_exp=1, step=0.0065, rcore=0.65):
     l     = Azimuthal quantum number.
     r_exp = Exponent of r in matrix element. (Default = 1).
     step  = Integration step size. (Default = 0.0065).
-    rcore = minimum r value. (The default is 0.65 -> dipole (polarizability)^(1/3) of He core).
+    rcore = minimum r value. (The default is core radius: 0.65 -> dipole (polarizability)^(1/3) of He core).
             [For hydrogen rcore=0.05]
 
     Returns

@@ -116,7 +116,7 @@ def dip_mtrx_elem(basis1,basis2,QD1,QD2,q=0,r_exp=1,step=0.0065,rcore=0.65):
     q     = Electric field polarisation vector, q = 0 [linear polarised], q= +/- 1 [Circularly polarised]
     r_exp = Exponent of r in matrix element for radial integral. (Default = 1).
     step  = Radial integration step size. (Default = 0.0065).
-    rcore = Minimum r value in numerov. (The default is 0.65 -> dipole (polarizability)^(1/3) of He core).
+    rcore = Minimum r value in numerov. (The default is core radius: 0.65 -> dipole (polarizability)^(1/3) of He core).
             [For hydrogen rcore=0.05]
     
     Returns
@@ -183,7 +183,7 @@ def H_s(basis,QD_arr,Fz=1.0,q=0,r_exp=1,step=0.0065,rcore=0.65):
             (Default = 0, linearly polarised)
     r_exp  = Exponent of r in matrix element for radial integral. (Default = 1).
     step   = Radial integration step size. (Default = 0.0065 a.u.).
-    rcore  = Minimum r value in numerov. (The default is 0.65 -> dipoole polarisability of He core).
+    rcore  = Minimum r value in numerov. (The default is core radius: 0.65 -> dipoole polarisability of He core).
     
     Returns
     -------
