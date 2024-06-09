@@ -4,7 +4,7 @@ Created on Mon Feb 19 11:52:15 2024
 
 @author: S.H.Reeder
 
-! THESE FUNCTIONS ARE YET TO BE VALIDATED - USE WITH CAUTION !
+!!! THESE FUNCTIONS ARE YET TO BE VALIDATED - USE WITH CAUTION !!!
 
 """
 from .Stark_Matrix import dip_mtrx_elem, lookup_eigval
@@ -28,7 +28,7 @@ def dip_spec_int(basis, QD_arr, state1, state2, q=0, r_exp=1, step=0.0065, rcore
 
     Returns
     -------
-    S_kq  = Dipole spectral intensity of one transition (SI).
+    S_kq  = Dipole spectral intensity of one transition (SI). - 𝑆𝑘𝑞=|∑𝑞∑𝑘𝑐𝑖𝑞𝑐𝑗𝑘⟨𝜓𝑖|𝜇|𝜓𝑗⟩|2
     """
     # Initialise value
     size = len(basis)
@@ -53,9 +53,7 @@ def dip_spec_int(basis, QD_arr, state1, state2, q=0, r_exp=1, step=0.0065, rcore
                 # Add component to spectral intensity
                 S_kq += (c_ik) * (c_jq) * (dip_mtrx_elem(basisi,basisj,QDi,QDj,q,r_exp,step,rcore))
             
-    return S_kq * e * a0
-            
-    return S_kq * e * a0 # converted to SI units
+    return S_kq * e * a0 # converted to SI units - Take modulus and square for spectral intensities
 
 ##------------------- Calculate einstein A coeffs -----------------------------
 # With no pre-calculated values
