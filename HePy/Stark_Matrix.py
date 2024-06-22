@@ -151,7 +151,7 @@ def H_0(basis,QD_arr):
     
     Returns
     --------
-    H0 = Square diagonal matrix of field free energies.
+    H0 = Square diagonal matrix of field free energies. (Units of Hz)
      """
     # Iniitlise square matrix the size of the basis
     size = len(basis)
