@@ -86,25 +86,29 @@ def order(eigenvalues,eigenvectors):
     
     return eigenvalues,eigenvectors
 
-def lookup_eigval(basis,n,l):
-    """Locate eigenvalues of specific state.
+def lookup_eigval(basis,n,l,ml=0):
+    """Locate eigenvalues of specific state. N.B.
     
     Inputs:
     -------
-    basis = [n,l] basis of states.
+    basis = [n,l,ml] basis of states.
     n     = Principal quantum number.
     l     = Orbital angular momentum quantum number.
+    ml    = Projection of the orbital angular quantum number.
     
     Returns
     -------
-    inds_nl = Indices of desired state
+    inds_nlm = Indices of desired state
     """
-    basis_arr = np.array(basis)
-    inds_n  = np.where(basis_arr == n)[0]
-    inds_l  = np.where(basis_arr == l)[0]
-    inds_nl = np.intersect1d(inds_n,inds_l)[0]
+    if (l==0)&(ml!=0): 
+        ml=0 # Force ml to be 0 for l=0
+        print("N.B. ml can take values from -l to +l. ml set to 0 for l=0!")
+    if abs(ml) > l:
+        raise ValueError("ml can take values from -l to +l")
     
-    return inds_nl
+    inds_nlm = basis.index([n,l,ml])
+    
+    return inds_nlm
 
 def dip_mtrx_elem(basis1,basis2,QD1,QD2,q=0,r_exp=1,step=0.0065,rcore=0.65):
     """Calculate dipole matrix element <n'l'm'|r|nlm> per unit field.
