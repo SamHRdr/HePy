@@ -87,7 +87,7 @@ def order(eigenvalues,eigenvectors):
     return eigenvalues,eigenvectors
 
 def lookup_eigval(basis,n,l,ml=0):
-    """Locate eigenvalues of specific state. N.B.
+    """Locate eigenvalues of specific state. 
     
     Inputs:
     -------
