@@ -4,11 +4,8 @@ Created on Mon Feb 19 11:52:15 2024
 
 @author: S.H.Reeder
 
-!!! THESE FUNCTIONS ARE YET TO BE VALIDATED - USE WITH CAUTION !!!
-
 """
-from .Stark_Matrix import dip_mtrx_elem, lookup_eigval
-from .Calculate_He_Transitions import W_tot, defect
+from .Stark_Matrix import dip_mtrx_elem
 from .constants import e, a0, eps0, c, h, hbar
 import numpy as np
 from tqdm import tqdm
@@ -55,98 +52,118 @@ def dip_spec_int(basis, QD_arr, state1, state2, q=0, r_exp=1, step=0.0065, rcore
             
     return S_kq * e * a0 # converted to SI units - Take modulus and square for spectral intensities
 
-##------------------- Calculate einstein A coeffs -----------------------------
-# With no pre-calculated values
-def ein_A(basis1,basis2,S=1,dJ=1,q=0,r_exp=1,step=0.0065,rcore=0.65):
-    """Calcualte field free Einstein A coefficient between two states. This function assumes no previous calculations.
+##------------------ Field-free Einstein-A coefficients -----------------------
+def dip_matrix(basis,QD_arr,q=0,r_exp=1,step=0.0065,rcore=0.65):
+    """Generates matrix of dipole matrix elements for polarisation q. 
+    !!N.B. Calculates one half of the matrix to save time as matrix would be symmetrical!!
     
     Inputs
     -------
-    basis = 1D Array. Basis set of atomic states [n,l,ml].
-    S     = Spin quantum number. [Default = 1 (triplets)].
-    dJ    = Difference from l i.e. J = l+dJ - used in quantum defect calculation.
-            (Default is 1. Can take values dJ = -1,0,+1 for the triplet state [S=1], must be 0 for S=0)
-    q     = Electric field polarisation vector, q = 0 [linear polarised], q= +/- 1 [Circularly polarised]
-    r_exp = Exponent of r in matrix element for radial integral. (Default = 1).
-    step  = Radial integration step size. (Default = 0.0065).
-    rcore = Minimum r value in numerov. (The default is 0.65 -> dipole (polarizability)^(1/3) of He core).
-            [For hydrogen rcore=0.05]
-    
-    
-    Returns
-    -------
-    A = Einsiein-A coefficient (S.I.).
-    """
-    
-    # Take out constants
-    C = (2. * e**2)/(3. * eps0 * h * c**3)
-    
-    ## Calculate omega (field free)
-    n1, l1 = basis1[0], basis1[1]
-    n2, l2 = basis2[0], basis2[1]
-    
-    # Quantum defect
-    if S==1: 
-        J1, J2 = l1+dJ, l2+dJ
-    else:
-        J1=J2=0
-        
-    QD1 = defect(n1,l1,J1,S)
-    QD2 = defect(n2,l2,J2,S)
-    
-    # Energies
-    W1 = W_tot(n1,QD1,wn=False) 
-    W2 = W_tot(n2,QD2,wn=False) 
-    W  = abs(W1-W2)
-    
-    # angular frequency
-    omega = 2*np.pi*W
-    
-    # Calculate dipole matrix element in S.I. units (function is a.u.)
-    D = dip_mtrx_elem(basis1,basis2,QD1,QD2,q,r_exp,step,rcore) * a0
-    
-    # Einstein-A coeff
-    A = C * omega**3 * D**2
-    
-    return A
-
-##------------------- Calculate flourescence lifetimes ------------------------
-def fl_life(basis,state1,S=0,dJ=1,q=0,r_exp=1,step=0.005,rcore=0.05):
-    """Calcualte field free Einstein A coefficient between two states. This function assumes no previous calculations.
-    
-    Inputs
-    -------
-    basis  = 1D Array. Basis set of atomic states [n,l,ml].
-    state1 = Iniitial state (that you want the lifetime of). [n1,l1,ml1].
-    S      = Spin quantum number. [Default = 1 (triplets)].
-    dJ     = Difference from l i.e. J = l+dJ - used in quantum defect calculation.
-            (Default is 1. Can take values dJ = -1,0,+1 for the triplet state [S=1], must be 0 for S=0)
-    q      = Electric field polarisation vector, q = 0 [linear polarised], q= +/- 1 [Circularly polarised]
+    basis  = 2D Array. Basis set of atomic states [n,l,ml].
+    QD_arr = Qauntum defects of basis states.
+    q      = Electric field polarisation vector, q = 0 [linearly polarised], q= +/- 1 [Circularly polarised]
     r_exp  = Exponent of r in matrix element for radial integral. (Default = 1).
     step   = Radial integration step size. (Default = 0.0065).
-    rcore  = Minimum r value in numerov. (The default is 0.65 -> dipole (polarizability)^(1/3) of He core).
+    rcore  = Minimum r value in numerov. (The default is core radius: 0.65 -> dipole (polarizability)^(1/3) of He core).
             [For hydrogen rcore=0.05]
-    
     
     Returns
     -------
-    Fluorescence lifetime (s).
+    Mml = Matrix of transition dipole moments (SI units).    
     """
-    # Get initial state
-    n1, l1, = state1[0], state1[1]
-    ind     = lookup_eigval(basis,n1,l1)
-    
-    # Calculate Einstein-A coefficients for all states of lower energy
-    A_s = 0.0
-    for i in tqdm(range(len(basis[:ind-1]))):
-        state_i = basis[i]
-        l_i     = basis[i][1]
+    # Initialise matrix
+    size = len(basis)
+    Mml  = np.zeros((size,size)) # Square matrix
 
-        if abs(l_i-l1)==1:
-            A    = ein_A(state1,state_i,S,dJ,q,r_exp,step,rcore)
-            A_s += A # Sum coefficients
-            
-    return A_s**(-1)
+    # Loop over all states and calculate the dipole matrix element for allowed transitions
+    for i in tqdm(range(size)): # rows
+        # state 1
+        ni, li, mli = basis[i][0], basis[i][1], basis[i][2]
+        QDi         = QD_arr[i]
+
+        for j in range(size): # columns
+            # state 2
+            nj, lj, mlj = basis[j][0], basis[j][1], basis[j][2]
+            QDj         = QD_arr[j]
+
+            if j<i: # off diagonal elements, only one half of matrix (state has no dip. mom. with itself)
+                if abs(li-lj)==1: # dl must be 1
+
+                    ## Define states
+                    statei = [ni,li,mli]
+                    statej = [nj,lj,mlj]
+
+                    ## Populate [i,j] element of matrix 
+                    Mml[i,j] += dip_mtrx_elem(statei,statej,QDi,QDj,q,r_exp,step,rcore) * a0 * e
+
+            else:break # kills inner loop if element is off diagonal or in top half of matrix
+    return Mml
+
+def EinA_mtrx(Mdip,H0):
+    """Generate matrix of Einstein-A coefficients from dipole moments and field free energies.
+    
+    Inputs
+    -------
+    Mdip = 2D array of transition dipole moments (SI).
+    H0   = Feild free energies (Hz).
+    
+    Returns
+    -------
+    MEA = Matrix of Einstein-A coefficients.
+    """
+    # Find indices of non-zero matrix elements
+    NZ = np.nonzero(Mdip)
+
+    # Initialise new matrix
+    MD = np.zeros(np.shape(Mdip))
+
+    for k in range(len(NZ[0])): # Assumes 2D square matrix
+        # Get row and column index for each element
+        i, j = NZ[0][k], NZ[1][k]
+
+        # Get dipole matrix element
+        D = Mdip[i,j]
+
+        # Get the relevant energies for that dipole moment and subtract them
+        Ei, Ej = H0[i,i], H0[j,j]
+        T = abs(Ej-Ei)
+
+        # populate the new matrix with the product of the angular transition frequency and the dipole moment
+        MD[i,j] = (2*np.pi*T)**3 * abs(D)**2
+        
+    # define constant
+    C  = (2)/(3*eps0*h*c**3)
+    
+    # create final array of Einstein-A coefficients
+    MEA = C * MD
+    return MEA
+
+##------------------ Stark-mixed Einstein-A coefficients ----------------------
+def EinA_F(Aeinarr, state):
+    """Calculate the Stark mixed fluorescence decay rate of a state.
+    
+    Inputs
+    -------
+    Aeinarr = Array of field free fluorescence decay rates. 
+    state   = Eigenvector of the state of interest.
+    
+    Returns
+    -------
+    rate = Field mixed Einstein-A coefficient. 
+    """
+    # Initialise values
+    size = len(state)
+    rate = 0
+    
+    # For each of the coeffcients
+    for j in range(size):
+        c_j   = state[j]
+        Aeinj = Aeinarr[j]
+        
+        # Sum the components of the mixed rates to the total mixed rate
+        rate += abs(c_j)**2 * Aeinj
+        
+    return rate
 
 ##--------------------------- Rabi frequency ----------------------------------
 def rabi_freq(basis1,basis2,QD1,QD2,I0,q=0,r_exp=1,step=0.0065,rcore=0.65):
