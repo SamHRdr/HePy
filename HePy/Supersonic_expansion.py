@@ -2,13 +2,14 @@
 """
 Created on Sun Jul 23 20:27:37 2023
 
-@author: sam_r
+@author: S.H.Reeder
+
+See Pauly, H (2000) - https://doi.org/10.1007/978-3-662-04213-7
 """
 import numpy as np
-import matplotlib.pyplot as plt
 from .constants import k
 
-#---------------------------------------- Effusive Beams --------------------------------------------------------
+#------------------------------- Effusive Beams -------------------------------
 def v_w(T1,m):
     '''Calculate most probable velocity from inital temperature and mass.
     Inputs:
@@ -41,7 +42,7 @@ def f_eff(m,v,T):
     f = a*b * v**2 * np.exp(-c)
     return f
 
-#---------------------------------------- Supersonic Beams --------------------------------------------------
+#-------------------------- Supersonic Beams ----------------------------------
 def T_2(P1,P2,T1,gamma):
     '''Calculate gas temperature after the nozzle.
     Inputs:
@@ -149,7 +150,7 @@ def v_2_mach(T1,m,gamma,MF):
     v2 = MF * np.sqrt((gamma*a)/(1+b*MF**2))
     return v2
 
-#---------------------------------------- z dependent functions --------------------------------------------------
+#------------------------ z dependent functions -------------------------------
 
 def M_z(A,B,C,D,z,gamma):
     '''Mach number at distance z from valve with diammeter D.
@@ -196,7 +197,6 @@ def v_z(Mz,gamma,m,Tz):
     -------
     vz = z dependent longitudinal velocity (m/s).
     '''
-    from scipy.constants import k
     vz = Mz*np.sqrt((gamma*k*Tz)/m)
     return vz
 
@@ -213,13 +213,12 @@ def f_hog(m,v,vz,Tz):
     -------
     f = probability distribution of velocities.
     '''
-    from scipy.constants import k
     a = m*(v-vz)**2
     b = 2*k*Tz
     f = v**2 * np.exp(-a/b)
     return f
 
-#------------------------------------ Composite supersonic mega function -----------------------------------------------
+#--------------------- Composite supersonic mega function ---------------------
 def f_mSS(m,v,P1,P2,T1,gamma):
     '''Probability distribution of longitudinal velocities for supersonic beam.
     Inputs:
@@ -243,22 +242,3 @@ def f_mSS(m,v,P1,P2,T1,gamma):
     b = (m*(v-v2)**2)/(2*k*T2)
     f = a * np.exp(-b)
     return f
-
-
-#---------------- Test Function with this--------------------------
-# m_He = 6.6464731e-27 #Helium mass (kg)
-# T1 = 372 # Valve temperature (K)
-# P1 = 3e5 # Stagnation (reservoir) pressure (Pa) - 3bar
-# P2 = 1e-2 # Chamber pressure (Pa)
-# gamma = 5/3 # for monoatomic gas
-
-# vs = np.arange(0,3001,1) # range of speeds to feed into the equations
-# fm = f_mSS(m_He,vs,P1,P2,T1,gamma)
-
-# plt.plot(vs,fm/max(fm),label='Supersonic vel. dist')
-# plt.xlim(1800,2150)
-# plt.xlabel('Speed (m/s)',fontsize=13)
-# plt.ylabel('Normalised Probability',fontsize=13)
-# plt.title(r'$T$='+str(T1)+'K, $P_{stag}$='+str('%.0f'%(P1*1e-5))+'bar',
-#           fontsize=13)
-# plt.legend()

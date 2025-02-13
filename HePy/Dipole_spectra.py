@@ -76,7 +76,7 @@ def dip_matrix(basis,QD_arr,q=0,r_exp=1,step=0.0065,rcore=0.65):
     Mml  = np.zeros((size,size)) # Square matrix
 
     # Loop over all states and calculate the dipole matrix element for allowed transitions
-    for i in tqdm(range(size)): # rows
+    for i in tqdm(range(size),desc='Dipole matrix'): # rows
         # state 1
         ni, li, mli = basis[i][0], basis[i][1], basis[i][2]
         QDi         = QD_arr[i]

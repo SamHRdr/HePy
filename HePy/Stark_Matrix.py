@@ -87,7 +87,7 @@ def order(eigenvalues,eigenvectors):
     return eigenvalues,eigenvectors
 
 def lookup_eigval(basis,n,l,ml=0):
-    """Locate eigenvalues of specific state. 
+    """Locate eigenvalues of specific state.
     
     Inputs:
     -------
@@ -115,7 +115,7 @@ def dip_mtrx_elem(basis1,basis2,QD1,QD2,q=0,r_exp=1,step=0.0065,rcore=0.65):
     
     Inputs
     -------
-    basis = 2D Array. Basis set of atomic states [n,l,ml].
+    basis = 1D Array. Basis set of atomic states [n,l,ml].
     QD    = Qauntum defect of basis state.
     q     = Electric field polarisation vector, q = 0 [linear polarised], q= +/- 1 [Circularly polarised]
     r_exp = Exponent of r in matrix element for radial integral. (Default = 1).
@@ -199,7 +199,7 @@ def H_s(basis,QD_arr,Fz=1.0,q=0,r_exp=1,step=0.0065,rcore=0.65):
     Hs = np.zeros((size,size))
     
     # Run over all possible states
-    for i in tqdm(range(size)):
+    for i in tqdm(range(size),desc='Hs'):
         ni  = basis[i][0]
         li  = basis[i][1]
         mli = basis[i][2]
@@ -251,7 +251,7 @@ def E_Stark(H0,Hs,Fz_arr):
     Eigvecs = np.zeros((size_Fz,size_H0,size_H0)) # [FxMxM] array - index as [field, basis, state].
         
     # Run over all field values.
-    for i in tqdm(range(size_Fz)):
+    for i in tqdm(range(size_Fz),desc='Eigenenergies'):
         Fz = Fz_arr[i]
         
         # Calculate total hamiltonian matrix H.
